@@ -7,8 +7,8 @@ import 'package:music_player/FilePicker.dart';
 
 class Test extends StatefulWidget {
   Test({super.key});
-  late List<File> files=[];
-
+  late List<String?> files=[];
+  bool Play=false;
   @override
   State<Test> createState() => _TestState();
 }
@@ -16,7 +16,6 @@ class Test extends StatefulWidget {
 class _TestState extends State<Test> {
   final AudioPlayer _audioPlayer = AudioPlayer();
   late String _localFilePath;
-
 
   @override
   Widget build(BuildContext context) {
@@ -31,33 +30,45 @@ class _TestState extends State<Test> {
                 onPressed: () async => {
                   await pickAndPlayAudio().then((file)=>{
                     setState(() {
-                      if(files!=null) {
-                        files!.addAll(file);
-                      }else{
-                        files=file;
-                      }
-                      print("--------------------------------------${files?.length}TT");
-                      print((files?.length !=null && files!.isNotEmpty));
+                      if(file.isNotEmpty){
+                        widget.files = file;
+                      print("---------------------------------------------");
+                      print(widget.files.toString());
+                      print("---------------------------------------------");
+                    }
+                    }),
                     })
-                  })
-                },
+                  }),
+              Expanded(
+                child:
+                ListView.builder(itemBuilder: (context, index) {
+                  return ListTile(leading: Icon(Icons.music_note),title: Text("hii"),onTap: (){
+                    _audioPlayer.setUrl(widget.files[index].toString());
+                    
+                    if(widget.Play){
+                      _audioPlayer.pause();
+                      setState(() {
+                        widget.Play!=widget.Play;
+                      });
+
+                    }else{
+                      _audioPlayer.play();
+                      setState(() {
+                        widget.Play!=widget.Play;
+                      });
+                    }
+                  },);
+                },itemCount: widget.files.length,),
               ),
-              (files?.length !=null && files!.isNotEmpty) ? Expanded(child: ListView.builder(itemBuilder: (context, index) {
-                return ListTile(leading: Icon(Icons.music_note),title: Text(files![index].path.toString().split("/")[files![index].path.toString().split("/").length-1].replaceFirst(".mp3", "")));
-              },itemCount: files?.length,)):Center(child: Text("List Is Empty",style: TextStyle(fontSize: 30),),)
+              //( widget.files.length > 0) ? ListView.builder(itemBuilder: (context, index) {
+              //    return ListTile(leading: Icon(Icons.music_note),title: Text("hii"));
+              //},itemCount: widget.files.length,):Text("")
             ],
           ),
         ))
     );
   }
 
-  void _pause() {
-    _audioPlayer.pause();
-  }
-
-  void _stop() {
-    _audioPlayer.stop();
-  }
 
   @override
   void dispose() {

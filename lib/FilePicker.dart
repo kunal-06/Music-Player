@@ -6,7 +6,6 @@ import 'package:just_audio/just_audio.dart';
 import 'package:file_picker/file_picker.dart' as filepicker;
 import 'package:fluttertoast/fluttertoast.dart';
 
-List<File>? files;
 final AudioPlayer _audioPlayer = AudioPlayer();
 late String _localFilePath;
 
@@ -21,8 +20,10 @@ Future<dynamic> pickAndPlayAudio() async {
   await _requestPermissions();
   filepicker.FilePickerResult? result = await filepicker.FilePicker.platform.pickFiles(allowMultiple: true);
   if (result != null) {
-    List<File> files = result.paths.map((path) => File(path!)).toList();
-    print("-------------------------------------------");
+    List<String?> files = result.paths??[];
+    //print("---------------------------------------------");
+    // print(files.toString());
+    // print("---------------------------------------------");
     return files;
   } else {
     return [];
